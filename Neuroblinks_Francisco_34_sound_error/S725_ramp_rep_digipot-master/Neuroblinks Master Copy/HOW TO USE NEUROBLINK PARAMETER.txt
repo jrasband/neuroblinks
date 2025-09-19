@@ -1,0 +1,100 @@
+HOW TO LOAD NEUROBLINK PARAMETERS
+
+Although Neuroblink define a lot of configuration parameters for each trial, the user does not need to set the value of all of them. If the user does not set the value of a parameter, Neuroblink will use a default value for that parameter. 
+
+The way in which Neuroblink load the parameters to configure the trials is through a dictionary defined in a .csv file (excel table). Inside this dictionary, the user will have to define pairs of "parameter names" and "parameter values". Thus, odd rows must contain the name of the parameter that the user want to set, and the even rows the values of that parameter. In the next table you can see and example of a dictionary:
+
+repeats	CS_dur_ms	CS_ch	ISI_ms	US_dur_ms	US_ch
+ 1	700	7	200	25	3
+repeats	CS_dur_ms	CS_ch	ISI_ms	US_dur_ms	US_ch
+1	700	7	200	50	3
+
+Here you can see a list of all the defined parameters in Neuroblink
+-'repeats':
+-'CS_dur_ms'
+-'CS_ch'
+-'ISI_ms'
+-'US_dur_ms'
+-'US_ch'
+-'ISI2_ms'
+-'US2_dur_ms'
+-'US2_ch'
+-'laser_delay_ms'
+-'laser_dur_ms'
+-'laser_power'
+-'CS_period_ms'
+-'CS_repeats'
+-'CS_add_reps'
+-'pre_time_ms'
+-'post_time_ms'
+-'ITI_s'
+-'random_ITI_s'
+-'ramp_off_time_ms'
+-'CS_intensity'
+-'tone_intensity'
+-'omit_US'
+-'omit_CR_threshold'
+-'omit_US2'
+-'omit_CR2_threshold'
+-'omit_US_or_US2'
+-'block'
+-'block_rep'  
+
+As we have previously said, if the user does not define the value of a parameter, Neuronblink will use a value by default. This is the list of default parameter values:
+-'repeats'=1;
+-'CS_dur_ms'=225;
+-'CS_ch'=7;
+-'ISI_ms'=200;
+-'US_dur_ms'=25;
+-'US_ch'=3;
+-'ISI2_ms'=0;
+-'US2_dur_ms'=0;
+-'US2_ch'=2;
+-'laser_delay_ms'=0;
+-'laser_dur_ms'=0;
+-'laser_power'=0;
+-'CS_period_ms'=0;
+-'CS_repeats'=0;
+-'CS_add_reps'=0;
+-'pre_time_ms'=200;
+-'post_time_ms'=800;
+-'ITI_s'=15;
+-'random_ITI_s'=0;
+-'ramp_off_time_ms'=0;
+-'CS_intensity'=255;
+-'tone_intensity'=50;
+-'omit_US'=0;
+-'omit_CR_threshold'=0.2;
+-'omit_US2'=0;
+-'omit_CR2_threshold'=0.2;
+-'omit_US_or_US2'=0;
+-'block'=1;
+-'block_rep'=100;  
+
+
+HOW TO DEFINE A NEW PARAMETER IN NEUROBLINK
+If you want to define a new parameter in Neuroblink, you will have to modify the code as follows:
+1) Open matlab and go to the folder containing the source code of Neuroblink.
+2) In the folder "arduino", secondary button over "MainWindows.fig" and select the option "open in GUIDE". This action will open a new window.
+3) In the new window, double click on the "parameters box". This action will open a new windows. In this new window, clik on "ColumnEditable" button. This action will open a new window in which are defined all the parameters that neuroblink uses. You will have to introduce your new parameter in this window, behind the first parameter "repeats" and before the last two parameters "block" and "block_rep". The parameter name used here will be the name used in all the code.
+4) Once you have finished the modifications, close the last two windows and save the changes in the window "MainWindow.fig". close also this window.
+5) In matlab, go to the folder "arduino/parameters". This folder contain the code required to load the parameters in Neuroblink. You will have to modify some of these files to include your new parameter.
+6) Open the file "get_initial_params.m". This file contains the initial parameter values when neuroblink is initilised. You must insert a new line inside the funcion "get_initial_params()" to load the initial value of your parameter. This new line should look like: "initialparams(1,dictionary_indexes('XXXXXXX'))=YYYYYYYY;", where XXXXXX is the name of the parameter (the same one that you have set in step 3) and YYYYYYYY is its value. This parameter should be fixed to an initial value that does not have any effect in the experiment. 
+7) Open the file "load_params.m". This file contains the function "get_default_params(N_rows)". This function sets the default value that will be used for each parameter that is not defined by the user. You must insert a new line inside this funcion to define the default value of your parameter. This line should look like: "defaultparams(i,dictionary_indexes(
+'XXXXXXX'))=YYYYYYYY;", where XXXXXX is the name of the parameter and YYYYYYYY is its value (IMPORTANT: this parameter should be fixed to a default value that does not have any effect in the experiment). 
+8) In matlab, go to the folder "arduino". Open the file "MainWindow.m". You will have to modify at least two functions inside this file:
+- function "refreshPermsA(handles)": This function is executed just before each trial. You will have to introduce your parameter inside the structure "metadata" that manage each trial. You will be able to access the value of your parameter for that trial using the function "trialvars(get_trial_index('XXXXXXXX'));", where XXXXXXX is the name of your parameter. 
+- function "sendto_arduino()". In most of the cases you will have to send your parameter to arduino in order to control some feature of the experiment. This functions is the one that sends the parameters to arduino using a serial port. You will have to introduce your parameter (previously included in the metadata structure) in the array "datatoarduino(ZZZZZZZZZ)=metadada.YOUR_PARAMETER", where ZZZZZZZ must be a free index inside the array "datatoarduino" and YOUR_PARAMETER is the value of your parameter inside the metadata structure. At the begining of the function you can see a list of all the used indexes (ZZZZZZZ). You should select a free one and insert your parameter inside this position. 
+9) The final step will be to modify the code in arduino. This code is inside the folder "arduino/private/firmware". You will have to modify the code and program arduino. I would recomend you to use the program "atom" and the plugin "platform IO" inside atom for this task. 
+10) open the folder "arduino/private/firmware" using "atom". Inside this folder, go to the folder "src" and open the file "main.cpp":
+- At the begining of the file you will have to define a new variable in which store the value of your new parameter. This variable should look like: "int param_XXXXXXXX = YYYYYYYY;", where XXXXXXX should be the name of your parameter and YYYYYYYY the default value that it will have (this value should be "zero"). 
+- After that, you will have to modify the function "checkVars()". This function reads the parameters that matlab sends throw the serial bus and stores their values in the variable defined in the previous step. You will have to introduce a new "Case" block inside the switch function. This block should look like:
+	case ZZZZZZZZ:
+      param_XXXXXXX = value;
+      break;
+where ZZZZZZZ is the same index that you used in matlab in the step number 8, and param_XXXXXXX is the same variable that you have previously defined in arduino in step 10. 
+11) Now you have the value of your new parameter in arduino. The final step will be to modify the arduino code in function of what you want to do with your parameter.
+ 
+
+
+ 

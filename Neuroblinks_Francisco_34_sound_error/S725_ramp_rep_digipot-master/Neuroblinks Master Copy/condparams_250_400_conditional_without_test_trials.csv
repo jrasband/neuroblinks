@@ -1,0 +1,2 @@
+repeats,CS_dur_ms,CS_ch,ISI_ms,US_dur_ms,US_ch,ISI2_ms,US2_dur_ms,US2_ch,laser_delay_ms,laser_dur_ms,laser_power,CS_period_ms,CS_repeats,CS_add_reps,pre_time_ms,post_time_ms,ITI_s,random_ITI_s,ramp_off_time_ms,CS_intensity,tone_intensity,omit_US,omit_CR_threshold,omit_US2,omit_CR2_threshold,omit_US_or_US2,post_ITI_thr_inc_start_s,post_ITI_thr_inc_dur_s,post_ITI_thr_inc,block,block_rep
+1,700,7,250,25,3,400,25,2,0,0,0,225,1,0,200,800,15,0,0,255,50,0,0.5,0,0.5,1,15,30,0.6,1,200
