@@ -53,11 +53,11 @@ function MainWindow_OpeningFcn(hObject, eventdata, handles, varargin)
     handles.output = hObject;
     % Update handles structure
     guidata(hObject, handles);
-    
+
     %Initialise the param dictionary indexes.
     set_param_dictionary_indexes(handles);
-    
-    configure; % Configuration script    
+
+    configure; % Configuration script
 
     % UIWAIT makes MainWindow wait for user response (see UIRESUME)
     % uiwait(handles.CamFig);
@@ -76,7 +76,7 @@ function MainWindow_OpeningFcn(hObject, eventdata, handles, varargin)
 
     typestring=get(handles.popupmenu_stimtype,'String');
     metadata.stim.type=typestring{get(handles.popupmenu_stimtype,'Value')};
-    
+
     % Set ITI using base time plus optional random range
     % We have to initialize here because "stream" function uses metadata.stim.c.ITI
     trialvars=readTrialTable(metadata.eye.trialnum1);
@@ -109,14 +109,14 @@ function MainWindow_OpeningFcn(hObject, eventdata, handles, varargin)
         paramtable=getappdata(0,'paramtable');
         set(handles.uitable_params,'Data',paramtable.data);
     end
-    
+
     %We will use this variable to check if the default parameters have been
     %modified befor the start of the experiment.
     setappdata(0,'defaultparametersmodified', 0);
-    
+
     %modify
     setappdata(0,'eyeThreshold',str2double(get(handles.edit_eyethr,'String')));
-    
+
     %Set fast saving option
     fast_saving_option=get(handles.fast_saving_box,'Value');
     setappdata(0,'fast_saving_option',fast_saving_option);
@@ -125,7 +125,7 @@ function MainWindow_OpeningFcn(hObject, eventdata, handles, varargin)
 function pushbutton_StartStopPreview_Callback(hObject, eventdata, handles)
     vidobj=getappdata(0,'vidobj');
     metadata=getappdata(0,'metadata');
-    
+
     src=getappdata(0,'src');
 
     if ~isfield(metadata.cam,'fullsize')
@@ -241,37 +241,37 @@ function CamFig_KeyPressFcn(hObject, eventdata, handles)
 
 
 % function pushbutton_setROI_Callback(hObject, eventdata, handles)
-% 
-%     vidobj=getappdata(0,'vidobj');   
+%
+%     vidobj=getappdata(0,'vidobj');
 %     metadata=getappdata(0,'metadata');
-% 
+%
 %     if isfield(metadata.cam,'winpos')
 %         winpos=metadata.cam.winpos;
 %         winpos(1:2)=winpos(1:2)+metadata.cam.vidobj_ROIposition(1:2);
 %     else
 %         winpos=[0 0 800 600];
 %     end
-% 
+%
 %     % Place rectangle on vidobj
 %     % h=imrect(handles.cameraAx,winpos);
 %     h=imellipse(handles.cameraAx,winpos);
-%     
-% 
+%
+%
 %     % fcn = makeConstrainToRectFcn('imrect',get(handles.cameraAx,'XLim'),get(handles.cameraAx,'YLim'));
 %     fcn = makeConstrainToRectFcn('imellipse',get(handles.cameraAx,'XLim'),get(handles.cameraAx,'YLim'));
 %     setPositionConstraintFcn(h,fcn);
-% 
+%
 %     % metadata.cam.winpos=round(wait(h));
 %     XY=round(wait(h));  % only use for imellipse
 %     metadata.cam.winpos=round(getPosition(h));
 %     metadata.cam.winpos(1:2)=metadata.cam.winpos(1:2)-metadata.cam.vidobj_ROIposition(1:2);
 %     metadata.cam.mask=createMask(h);
-% 
+%
 %     wholeframe=getsnapshot(vidobj);
 %     binframe=im2bw(wholeframe,metadata.cam.thresh);
 %     eyeframe=binframe.*metadata.cam.mask;
 %     metadata.cam.pixelpeak=sum(sum(eyeframe));
-% 
+%
 %     hp=findobj(handles.cameraAx,'Tag','roipatch');
 %     delete(hp)
 %     % handles.roipatch=patch([xmin,xmin+width,xmin+width,xmin],[ymin,ymin,ymin+height,ymin+height],'g','FaceColor','none','EdgeColor','g','Tag','roipatch');
@@ -279,10 +279,10 @@ function CamFig_KeyPressFcn(hObject, eventdata, handles)
 %     delete(h);
 %     handles.roipatch=patch(XY(:,1),XY(:,2),'g','FaceColor','none','EdgeColor','g','Tag','roipatch');
 %     handles.XY=XY;
-% 
+%
 %     setappdata(0,'metadata',metadata);
 %     guidata(hObject,handles)
-% 
+%
 %     % vidobj=getappdata(0,'vidobj');  metadata=getappdata(0,'metadata');
 %     % if isfield(metadata.cam,'winpos')
 %     %     winpos=metadata.cam.winpos;
@@ -315,7 +315,7 @@ function CamFig_KeyPressFcn(hObject, eventdata, handles)
 
 function pushbutton_setROI_Callback(hObject, eventdata, handles)
 
-    vidobj=getappdata(0,'vidobj');   
+    vidobj=getappdata(0,'vidobj');
     metadata=getappdata(0,'metadata');
 
     if isfield(metadata.cam,'winpos')
@@ -327,7 +327,7 @@ function pushbutton_setROI_Callback(hObject, eventdata, handles)
 
     % Place elipse on vidobj
     h = drawellipse(handles.cameraAx);
-    
+
     %wait until the user fix the ellipse position
     XY=round(customWait(h));
 
@@ -377,7 +377,7 @@ function clickROICallback(~,evt)
     if strcmp(evt.SelectionType,'double')
         uiresume;
     end
-    
+
 
 %Calibration Push Button
 function pushbutton_CalbEye_Callback(hObject, eventdata, handles)
@@ -406,17 +406,17 @@ function pushbutton_CalbEye_Callback(hObject, eventdata, handles)
 
     metadata.cam.cal=0;
     metadata.ts(2)=etime(clock,datevec(metadata.ts(1)));
-   
+
     % --- trigger via arduino --
     arduino=getappdata(0,'arduino');
     fwrite(arduino,1,'int8');
     setappdata(0,'metadata',metadata);
-    
+
     %Calibrate the second camera for the second eye.
     if metadata.multicams.N_eye_cams == 2
         %white 15 second to finish the first eye calibration
         pause(15.0);
-        
+
         metadata.cam_eye_2.cal=1;
         setappdata(0,'metadata',metadata);
 
@@ -443,9 +443,9 @@ function pushbutton_CalbEye_Callback(hObject, eventdata, handles)
         fwrite(arduino,1,'int8');
 
         setappdata(0,'metadata',metadata);
-    
+
     end
-    
+
 
 
 %Instant replay Push Button
@@ -457,8 +457,8 @@ function pushbutton_instantreplay_Callback(hObject, eventdata, handles)
         %instantReplay(getappdata(0,'lastdata_eye_2'),getappdata(0,'lastmetadata_eye_2'));
         instantReplayBothEyes(getappdata(0,'lastdata'),getappdata(0,'lastmetadata'),getappdata(0,'lastdata_eye_2'),getappdata(0,'lastmetadata_eye_2'));
     end
-    
-    
+
+
 %Toggle Continuous Push Button
 function toggle_continuous_Callback(hObject, eventdata, handles)
     %we check if the default parameters have been modified.
@@ -470,9 +470,9 @@ function toggle_continuous_Callback(hObject, eventdata, handles)
         %The user abort the execution
         if ~strcmpi(button,'Yes')
             return
-        %If the user doesn't abort the execution, we diseble the pop up windows with the warning. 
+        %If the user doesn't abort the execution, we diseble the pop up windows with the warning.
         else
-            setappdata(0,'defaultparametersmodified',1);    
+            setappdata(0,'defaultparametersmodified',1);
         end
     end
 
@@ -497,15 +497,15 @@ function pushbutton_stim_Callback(hObject, eventdata, handles)
         %The user abort the execution
         if ~strcmpi(button,'Yes')
             return
-        %If the user doesn't abort the execution, we diseble the pop up windows with the warning. 
+        %If the user doesn't abort the execution, we diseble the pop up windows with the warning.
         else
-            setappdata(0,'defaultparametersmodified',1);    
+            setappdata(0,'defaultparametersmodified',1);
         end
     end
-    
+
     setappdata(0,'eyeThreshold',str2double(get(handles.edit_eyethr,'String')));
     setappdata(0,'abort_trial_enabled',1);
-    
+
     %start a new trial.
     TriggerArduino(handles)
 
@@ -635,7 +635,7 @@ function pushbutton_opentable_Callback(hObject, eventdata, handles)
     ghandles=getappdata(0,'ghandles');
     trialtablegui=TrialTable;
     movegui(trialtablegui,[ghandles.pos_mainwin(1)+ghandles.size_mainwin(1)+20 ghandles.pos_mainwin(2)])
-    
+
 %     %Update the number of trial to be executed in the GUI
 %     N_trials = size(trialtable, 1);
 %     str_N_trials=sprintf('%d', N_trials);
@@ -649,10 +649,10 @@ function update_trial_table(hObject, eventdata, handles)
     % paramtable.tonefreq=str2num(get(handles.edit_tone,'String'));
     % if length(paramtable.tonefreq)<2, paramtable.tonefreq(2)=0; end
     setappdata(0,'paramtable',paramtable);
-    
+
     trialtable=makeTrialTable(paramtable.data,paramtable.randomize);
     setappdata(0,'trialtable',trialtable);
-    
+
     %Update the number of trial to be executed in the GUI
     N_trials = size(trialtable, 1);
     str_N_trials=sprintf('%d', N_trials);
@@ -674,11 +674,11 @@ function refreshPermsA(handles)
     % for Calibrate first eye
     if metadata.cam.cal
         metadata.stim.type='puff';
-    end 
+    end
     % for Calibrate second eye
     if metadata.multicams.N_eye_cams == 2 && metadata.cam_eye_2.cal
         metadata.stim.type='puff2';
-    end 
+    end
 
     metadata.stim.c.csdelay=0;
     metadata.stim.c.csdur=0;
@@ -701,7 +701,7 @@ function refreshPermsA(handles)
     metadata.stim.l.dur=0;
     metadata.stim.l.amp=0;
     metadata.stim.p.puffdur=str2double(get(handles.edit_puffdur,'String'));
-    
+
     metadata.stim.motor.current = 0;
     metadata.stim.motor.delay = 0;
     metadata.stim.motor.dur = 0;
@@ -711,9 +711,9 @@ function refreshPermsA(handles)
     metadata.stim.motor.energized_intertrial = 0;
     metadata.stim.motor.speed_intertrial = 0;
     metadata.stim.motor.acceleration_intertrial = 0;
-    
+
     metadata.note = getappdata(0,'note_value');
-    
+
     switch lower(metadata.stim.type)
         case 'none'
             metadata.stim.totaltime=0;
@@ -726,7 +726,7 @@ function refreshPermsA(handles)
             metadata.stim.totaltime=metadata.stim.p.puffdur;
             metadata.cam_eye_2.time(1)=200;
             metadata.cam_eye_2.time(2)=metadata.stim.totaltime;
-            metadata.cam_eye_2.time(3)=800-metadata.stim.totaltime;    
+            metadata.cam_eye_2.time(3)=800-metadata.stim.totaltime;
         case 'conditioning'
             trialvars=readTrialTable(metadata.eye.trialnum1);
             %Set Camera Time
@@ -768,12 +768,12 @@ function refreshPermsA(handles)
             metadata.stim.c.cs_period = trialvars(get_trial_index('CS_period_ms'));
             metadata.stim.c.cs_repeats = trialvars(get_trial_index('CS_repeats'));
             metadata.stim.c.cs_addreps = randi([0,trialvars(get_trial_index('CS_add_reps'))],1,1);%generates a random integer to be added to cs_repeats, also affects ISI
-            
-            
-            
+
+
+
             %%Variables relevant for repeating stimuli only
             stimnum=metadata.stim.c.cs_repeats+metadata.stim.c.cs_addreps;
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%Greg%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%Greg%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             if metadata.stim.l.delay==6 %laser presentation with every stimulus in sequence
                 metadata.stim.l.laserperiod = metadata.stim.c.cs_period;
                 metadata.stim.l.lasernumpulses=metadata.stim.c.cs_repeats+metadata.stim.c.cs_addreps;
@@ -797,7 +797,7 @@ function refreshPermsA(handles)
             metadata.protocol.omit_US2=trialvars(get_trial_index('omit_US2'));
             metadata.protocol.omit_CR2_threshold=trialvars(get_trial_index('omit_CR2_threshold'));
             metadata.protocol.omit_US_or_US2=trialvars(get_trial_index('omit_US_or_US2'));
-            
+
             %Motor configuration
             metadata.stim.motor.current = trialvars(get_trial_index('motor_current_mA'));
             metadata.stim.motor.delay = trialvars(get_trial_index('motor_delay_ms'));
@@ -809,8 +809,8 @@ function refreshPermsA(handles)
             metadata.stim.motor.speed_intertrial = trialvars(get_trial_index('motor_speed_intertrial'));
             metadata.stim.motor.acceleration_intertrial = trialvars(get_trial_index('motor_acceleration_intertrial'));
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            
-            
+
+
         otherwise
             metadata.stim.totaltime=0;
             warning('Unknown stimulation mode set.');
@@ -826,8 +826,8 @@ function refreshPermsA(handles)
 function sendto_arduino()
     %datatoarduino(1):  start trial
     %datatoarduino(2):  ready to receive encoder information
-    
-    %datatoarduino(3):  pre_time_ms 
+
+    %datatoarduino(3):  pre_time_ms
     %datatoarduino(4):  CS channel
     %datatoarduino(5):  CS duration
     %datatoarduino(6):  US/puff duration
@@ -841,19 +841,19 @@ function sendto_arduino()
     %datatoarduino(14): CS_tone_intensity
     %datatoarduino(15): laser period
     %datatoarduino(16): laser num pulse
-    %datatoarduino(17): 
-    %datatoarduino(18): 
-    %datatoarduino(19): 
+    %datatoarduino(17):
+    %datatoarduino(18):
+    %datatoarduino(19):
     %datatoarduino(20): CS period
     %datatoarduino(21): ???????????
     %datatoarduino(22): ramp off time
-    %datatoarduino(23): 
-    %datatoarduino(24): 
-    %datatoarduino(25): 
-    %datatoarduino(26): 
-    %datatoarduino(27): 
-    %datatoarduino(28): 
-    %datatoarduino(29): 
+    %datatoarduino(23):
+    %datatoarduino(24):
+    %datatoarduino(25):
+    %datatoarduino(26):
+    %datatoarduino(27):
+    %datatoarduino(28):
+    %datatoarduino(29):
     %datatoarduino(30): ISI2
     %datatoarduino(31): US2_duration
     %datatoarduino(32): US2_channel
@@ -873,14 +873,14 @@ function sendto_arduino()
     %datatoarduino(45): motor.acceleration_intertrial
     %datatoarduino(46): motor.current
     %datatoarduino(47):
-    %datatoarduino(48): 
+    %datatoarduino(48):
     %datatoarduino(49): CS intensity
     %triggerArduino
     %datatoarduino(50): abort trial
     %datatoarduino(51): omit US
     %datatoarduino(52): omit US2
-    
-   
+
+
 
     metadata=getappdata(0,'metadata');
     datatoarduino=zeros(1,55); %REVISAR
@@ -907,8 +907,8 @@ function sendto_arduino()
         datatoarduino(34)=metadata.stim.c.cs2delay;
         datatoarduino(35)=metadata.stim.c.cs2dur;
         datatoarduino(36)=metadata.stim.c.cs2num;
-        
-        
+
+
         datatoarduino(6)=metadata.stim.c.usdur;
         datatoarduino(7)=(metadata.stim.c.isi+metadata.stim.c.cs_addreps*metadata.stim.c.cs_period); %sets the appropriate ISI for the eventual number of CS repetitions
         if ismember(metadata.stim.c.csnum,[5 6]),
@@ -966,7 +966,7 @@ function sendto_arduino()
 
         datatoarduino(20)=metadata.stim.c.cs_period;
         datatoarduino(21)=metadata.stim.c.cs_repeats+metadata.stim.c.cs_addreps;
-        
+
         %%%%%%%%%%%%%%%%%%FRANCISCO%%%%%%%%%%%%%%%%%%%%%%%%
         if metadata.multicams.N_eye_cams == 2
             datatoarduino(30)=metadata.stim.c.isi_eye_2;
@@ -974,16 +974,16 @@ function sendto_arduino()
             datatoarduino(32)=metadata.stim.c.usnum_eye_2;
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        
+
+
         %Motor configuration parameters
         if (metadata.stim.motor.delay >=0)
             datatoarduino(37)=metadata.stim.motor.delay;
             datatoarduino(38)=0;
-        else    
+        else
             datatoarduino(37)=0;
             datatoarduino(38)=-metadata.stim.motor.delay;
-        end    
+        end
         datatoarduino(39)=metadata.stim.motor.dur;
         datatoarduino(40)=metadata.stim.motor.energized_trial;
         datatoarduino(41)=metadata.stim.motor.speed_trial;
@@ -992,12 +992,12 @@ function sendto_arduino()
         datatoarduino(44)=metadata.stim.motor.speed_intertrial;
         datatoarduino(45)=metadata.stim.motor.acceleration_intertrial;
         datatoarduino(46)=metadata.stim.motor.current;
-        
+
     end
 
     % ---- send data to arduino ----
     arduino=getappdata(0,'arduino');
-    
+
     %TESTING THE COMMUNICATION WITH ARDUINO, SENDING THE VALUE 110 AND WAITING
     %FOR THE SAME ANSWER.
     fwrite(arduino,110,'int8');
@@ -1012,8 +1012,8 @@ function sendto_arduino()
         pause(0.500);
         disp('ARDUINO BOARD HAS BEEN RESET BEFOR THE PARAMETER CONFIGURATION DUE TO A PROBLEM WITH THE COMMUNICATION')
     end
-        
-    
+
+
     for i=3:length(datatoarduino),
         fwrite(arduino,i,'int8');                  % header
         fwrite(arduino,datatoarduino(i),'int16');  % data
@@ -1021,23 +1021,23 @@ function sendto_arduino()
             pause(0.010);
         end
     end
-    
-    
+
+
 function endOfTrial2(obj,event)
 
 
-    
+
 function TriggerArduino(handles)
     refreshPermsA(handles)
     sendto_arduino() %finish puff/stimulus
 
     metadata=getappdata(0,'metadata');
     trialvars=readTrialTable(metadata.eye.trialnum1);
-    
+
 
     vidobj=getappdata(0,'vidobj');
     src=getappdata(0,'src');
-    
+
     vidobj.TriggerRepeat = 0;
 
     vidobj.StopFcn=@endOfTrial;
@@ -1053,20 +1053,20 @@ function TriggerArduino(handles)
     src.TriggerMode='On';
     % Now get camera ready for acquisition -- shouldn't start yet
     start(vidobj);
-    
+
     %Configure the parameters for the second eye camera.
     if metadata.multicams.N_eye_cams == 2
         vidobj_eye_2=getappdata(0,'vidobj_eye_2');
         src_eye_2=getappdata(0,'src_eye_2');
-        
-  
+
+
         vidobj_eye_2.TriggerRepeat = 0;
 
         %the "endOfTrial" function configured with the first camera will
         %process all the trial information, including the one corresponding
         %to this second camera.
         vidobj_eye_2.StopFcn=@endOfTrial2;
-        
+
         flushdata(vidobj_eye_2); % Remove any data from buffer before triggering
 
         % Set camera to hardware trigger mode
@@ -1076,11 +1076,11 @@ function TriggerArduino(handles)
         % Now get camera ready for acquisition -- shouldn't start yet
         stoppreview(vidobj_eye_2);
         stop(vidobj_eye_2);
-        src_eye_2.TriggerMode='On';        
+        src_eye_2.TriggerMode='On';
         start(vidobj_eye_2)
     end
-    
-    
+
+
     %Configure the parameters for the body cameras.
     if metadata.multicams.N_body_cams > 0
         for body_cam_index = 1:metadata.multicams.N_body_cams
@@ -1104,9 +1104,9 @@ function TriggerArduino(handles)
             % Now get camera ready for acquisition -- shouldn't start yet
             stoppreview(vidobj_body_x);
             stop(vidobj_body_x);
-            src_body_x.TriggerMode='On';        
+            src_body_x.TriggerMode='On';
             start(vidobj_body_x)
-        end    
+        end
     end
 
 
@@ -1135,14 +1135,14 @@ function TriggerArduino(handles)
         previous_US2_time_s = (previous_US2_time_ms)/1000.0;
         previous_US2_frame = ceil(previous_US2_time_ms * metadata.cam_eye_2.fps);
     end
-    
+
     %If the motor delay is negative, the trial will start with the motor,
-    %but the camera will start later. 
+    %but the camera will start later.
     negative_premotor_delay = 0;
     if metadata.stim.motor.delay < 0
         negative_premotor_delay = abs(metadata.stim.motor.delay)/1000.0;
     end
-    
+
     %Ponderated CR amplitude respect to the CS_eyelidpos baseline required to
     %suppress the US stimulus (between 0 and 1).
     omit_CR_threshold=trialvars(get_trial_index('omit_CR_threshold'));
@@ -1150,9 +1150,9 @@ function TriggerArduino(handles)
     %Ponderated CR2 amplitude respect to the CS_eyelidpos baseline required to
     %suppress the US2 stimulus (between 0 and 1).
     omit_CR2_threshold=trialvars(get_trial_index('omit_CR2_threshold'));
-    
-    
-    
+
+
+
     %Number of omitted US (defined as persistent to store the value for all
     %the trials)
     persistent N_first_eye_CRs
@@ -1165,8 +1165,8 @@ function TriggerArduino(handles)
     if isempty(N_second_eye_CRs)
         N_second_eye_CRs=0;
     end
-    
-   
+
+
     first_eye_US_trigger = 1;
     second_eye_US_trigger = 1;
     trial_aborted = 0;
@@ -1188,30 +1188,30 @@ function TriggerArduino(handles)
         src=getappdata(0,'src');
         stoppreview(vidobj);
         stop(vidobj);
-        src.TriggerMode='Off';    
+        src.TriggerMode='Off';
         preview(vidobj,handles_maingui.pwin);
         return
     end
-    
-    
-    
+
+
+
     % --- trigger via arduino --
     arduino=getappdata(0,'arduino');
     fwrite(arduino,1,'int8');
 
 %     %%%%%%%%%%%%%%%%%FRANCISCO%%%%%%%%%%%%%%%%%%%%%%%%%
-   
+
 %     tStart = tic;
 %     while 1
 %         tStop = toc(tStart) - negative_premotor_delay; %during the first "negative_premotor_delay" seconds of the trial the cameras are not recording
 %         %abort the trial if the eye is to closed befor the start of the CS stimulus
-%         if vidobj.FramesAvailable >= previous_CS_frame || tStop > previous_CS_time_s 
+%         if vidobj.FramesAvailable >= previous_CS_frame || tStop > previous_CS_time_s
 %             %First eye
 %             data = getsnapshot(vidobj);
 %             roi=data.*uint8(metadata.cam.mask); % multiply the frame by the mask --> everything outside of the ROI becomes 0 and everything inside the ROI remains the same (is multiplied by 1)
 %             eyelidpos=sum(roi(:)>=256*metadata.cam.thresh); % find everywhere in roi that is > your threshold value converted into 8-bit-integer units
 %             previous_CS_eyelidpos = (eyelidpos-metadata.cam.calib_offset)/metadata.cam.calib_scale; % eyelid pos
-%             
+%
 %             %second eye
 %             if metadata.multicams.N_eye_cams == 2
 %                 data_eye_2 = getsnapshot(vidobj_eye_2);
@@ -1219,7 +1219,7 @@ function TriggerArduino(handles)
 %                 eyelidpos_eye_2=sum(roi(:)>=256*metadata.cam_eye_2.thresh); % find everywhere in roi that is > your threshold value converted into 8-bit-integer units
 %                 previous_CS_eyelidpos_eye_2 = (eyelidpos_eye_2-metadata.cam_eye_2.calib_offset)/metadata.cam_eye_2.calib_scale; % eyelid pos
 %             end
-% 
+%
 %             %abort trial if the eyelid pos is larger than the eyelid
 %             %threshold + 0.05
 %             if getappdata(0,'abort_trial_enabled') && (previous_CS_eyelidpos > (getappdata(0,'eyeThreshold') + 0.05) && get(handles.wait_first_eye,'Value') || (metadata.multicams.N_eye_cams == 2 && previous_CS_eyelidpos_eye_2 > (getappdata(0,'eyeThreshold') + 0.05) && get(handles.wait_second_eye,'Value')))
@@ -1232,7 +1232,7 @@ function TriggerArduino(handles)
 %                     else
 %                         fprintf('Trial %d aborter %f ms before CS onset due to eyelid is too closed befor CS onset: %f\n', metadata.cam.trialnum, CS_time_s-tStop, previous_CS_eyelidpos)
 %                     end
-% 
+%
 %                     trial_aborted = 1;
 %                 else
 %                     previous_CS_time_ms = previous_CS_time_ms - (tStop-CS_time_s)*1000.0;
@@ -1243,25 +1243,25 @@ function TriggerArduino(handles)
 %             break
 %         end
 %     end
-% 
+%
 %     if ~trial_aborted
 %         omit_US = trialvars(get_trial_index('omit_US'));
 %         omit_US2 = trialvars(get_trial_index('omit_US2'));
 %         omit_US_or_US2 = trialvars(get_trial_index('omit_US_or_US2'));
-%         while 1 
+%         while 1
 %             %The camera is not recording the first puff
 %             if metadata.stim.c.isi > metadata.cam.time(2)+metadata.cam.time(3)
 %                 break
-%             end            
+%             end
 %             %Omit the US generation if the CR is large enough
-%             tStop = toc(tStart) - negative_premotor_delay; %during the first "negative_premotor_delay" seconds of the trial the cameras are not recording 
+%             tStop = toc(tStart) - negative_premotor_delay; %during the first "negative_premotor_delay" seconds of the trial the cameras are not recording
 %             if vidobj.FramesAvailable >= previous_US_frame || tStop > previous_US_time_s
 %                 FramesAvailable = vidobj.FramesAvailable;
 %                 data = getsnapshot(vidobj);
 %                 roi=data.*uint8(metadata.cam.mask); % multiply the frame by the mask --> everything outside of the ROI becomes 0 and everything inside the ROI remains the same (is multiplied by 1)
 %                 eyelidpos=sum(roi(:)>=256*metadata.cam.thresh); % find everywhere in roi that is > your threshold value converted into 8-bit-integer units
 %                 previous_US_eyelidpos = (eyelidpos-metadata.cam.calib_offset)/metadata.cam.calib_scale; % eyelid pos
-% 
+%
 %                 CR_value = (previous_US_eyelidpos-previous_CS_eyelidpos)/(1-previous_CS_eyelidpos);
 %                 if (omit_US || omit_US_or_US2)
 %                     if CR_value > omit_CR_threshold
@@ -1269,18 +1269,18 @@ function TriggerArduino(handles)
 %                     elseif(omit_US_or_US2)
 %                         second_eye_US_trigger = 0;
 %                     end
-% 
+%
 %                     tStop = toc(tStart) - negative_premotor_delay; %during the first "negative_premotor_delay" seconds of the trial the cameras are not recording
 %                     %Send to arduino the corresponding order about the abortion
 %                     %of the first US (header=51).
 %                     fwrite(arduino,51,'int8');          % header
 %                     fwrite(arduino,first_eye_US_trigger,'int16');  % data
 %                 end
-%                 
+%
 %                 if CR_value > 0.2
 %                     N_first_eye_CRs=N_first_eye_CRs+1;
 %                 end
-%                 
+%
 %                 if tStop>previous_US_frame
 %                     previous_US_time_ms = previous_US_time_ms - (tStop-previous_US_time_s)*1000.0;
 %                     previous_US_time_s = (previous_US_time_ms)/1000.0;
@@ -1289,7 +1289,7 @@ function TriggerArduino(handles)
 %                 break;
 %             end
 %         end
-% 
+%
 %         print_info_omit_US2=0;
 %         if metadata.multicams.N_eye_cams == 2
 %             if second_eye_US_trigger == 0
@@ -1298,11 +1298,11 @@ function TriggerArduino(handles)
 %                 fwrite(arduino,52,'int8');          % header
 %                 fwrite(arduino,second_eye_US_trigger,'int16');  % data
 %             else
-%                 while 1 
+%                 while 1
 %                     %The camera is not recording the second puff
 %                     if metadata.stim.c.isi_eye_2 > metadata.cam.time(2)+metadata.cam.time(3)
 %                         break
-%                     end  
+%                     end
 %                     %Omit the US generation if the CR is large enough
 %                     tStop_eye_2 = toc(tStart) - negative_premotor_delay; %during the first "negative_premotor_delay" seconds of the trial the cameras are not recording
 %                     if vidobj_eye_2.FramesAvailable >= previous_US2_frame || tStop_eye_2 > previous_US2_time_s
@@ -1311,7 +1311,7 @@ function TriggerArduino(handles)
 %                         roi=data_eye_2.*uint8(metadata.cam_eye_2.mask); % multiply the frame by the mask --> everything outside of the ROI becomes 0 and everything inside the ROI remains the same (is multiplied by 1)
 %                         eyelidpos_eye_2=sum(roi(:)>=256*metadata.cam_eye_2.thresh); % find everywhere in roi that is > your threshold value converted into 8-bit-integer units
 %                         previous_US2_eyelidpos = (eyelidpos_eye_2-metadata.cam_eye_2.calib_offset)/metadata.cam_eye_2.calib_scale; % eyelid pos
-% 
+%
 %                         CR2_value = (previous_US2_eyelidpos-previous_CS_eyelidpos_eye_2)/(1-previous_CS_eyelidpos_eye_2);
 %                         if omit_US2
 %                             if CR2_value > omit_CR2_threshold
@@ -1323,43 +1323,43 @@ function TriggerArduino(handles)
 %                             %of the second US (header=52).
 %                             fwrite(arduino,52,'int8');          % header
 %                             fwrite(arduino,second_eye_US_trigger,'int16');  % data
-%                             
+%
 %                             %We must print the info regarding the second eye.
 %                             print_info_omit_US2=1;
-%                         
+%
 %                         end
 %                         if CR2_value > 0.2
 %                             N_second_eye_CRs=N_second_eye_CRs+1;
 %                         end
-% 
+%
 %                         if tStop_eye_2>previous_US2_frame
 %                             previous_US2_time_ms = previous_US2_time_ms - (tStop_eye_2-previous_US2_time_s)*1000.0;
 %                             previous_US2_time_s = (previous_US2_time_ms)/1000.0;
 %                             previous_US2_frame = ceil(previous_US2_time_ms * metadata.cam_eye_2.fps);
 %                         end
-% 
+%
 %                         break;
 %                     end
 %                 end
 %             end
 %         end
-% 
+%
 %         if omit_US || omit_US_or_US2
 %             fprintf('Trial: %d, first eye position: %f, CR value: %f, US_trigger: %d, time to US: %f ms, frames available: %d.\n', metadata.cam.trialnum, previous_US_eyelidpos, CR_value,first_eye_US_trigger, US_time_s-tStop, FramesAvailable)
-%         end   
-%         if print_info_omit_US2==1 
+%         end
+%         if print_info_omit_US2==1
 %             fprintf('Trial: %d, second eye position: %f, CR2 value: %f, US2_trigger: %d, time to US: %f ms, frames available: %d.\n', metadata.cam.trialnum, previous_US2_eyelidpos, CR2_value, second_eye_US_trigger, US2_time_s-tStop_eye_2, FramesAvailable_eye_2)
 %         end
-%         
+%
 %         %set if the first eye US has been generated or ommited
 %         metadata.trial_control.first_eye_US_trigger = first_eye_US_trigger;
-%         
+%
 %         %update the number and rate of CRs in the GUI
 %         str_N=sprintf('%d', N_first_eye_CRs);
 %         set(handles.value_N_first_eye_CRs,'String',str_N);
 %         str_rate=sprintf('%1.2f', (1.0*N_first_eye_CRs)/metadata.eye.trialnum1);
 %         set(handles.value_first_eye_CR_rate,'String',str_rate);
-% 
+%
 %         if metadata.multicams.N_eye_cams == 2
 %             %set if the second eye US has been generated or ommited
 %             metadata.trial_control.second_eye_US_trigger = second_eye_US_trigger;
@@ -1369,11 +1369,11 @@ function TriggerArduino(handles)
 %             str_rate=sprintf('%1.2f', (1.0*N_second_eye_CRs)/metadata.eye.trialnum1);
 %             set(handles.value_second_eye_CR_rate,'String',str_rate);
 %         end
-%     end            
-   
-    
+%     end
 
-    
+
+
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % ---- write status bar ----
@@ -1402,7 +1402,7 @@ function TriggerArduino(handles)
         setappdata(0,'metadata',metadata);
     end
 
-    
+
 
 
 function newFrameCallback(obj,event,himage)
@@ -1459,10 +1459,10 @@ function newFrameCallback(obj,event,himage)
 
     %Eyelid trace
     set(eyeTrace(1),'XData',eyedata(:,1)-timeSinceStreamStartMS,'YData',eyedata(:,2))
-    
-   
+
+
     set(himage,'CData',event.Data)
-    
+
     %The abort trial option is enabled by default
     setappdata(0,'abort_trial_enabled',1);
     try
@@ -1484,28 +1484,28 @@ function newFrameCallback(obj,event,himage)
             post_ITI_thr_inc_start_s=trialvars(get_trial_index('post_ITI_thr_inc_start_s'));
             post_ITI_thr_inc_dur_s=trialvars(get_trial_index('post_ITI_thr_inc_dur_s'));
             post_ITI_thr_inc=trialvars(get_trial_index('post_ITI_thr_inc'));
-            
-            
+
+
             timeLeftThreshold=metadata.stim.c.ITI + post_ITI_thr_inc_start_s + post_ITI_thr_inc_dur_s - elapsedTimeSinceLastTrial;
             eyeThreshold=str2double(get(handles.edit_eyethr,'String'));
-            
+
             if timeLeftThreshold<post_ITI_thr_inc_dur_s && post_ITI_thr_inc_dur_s > 0
                 set(handles.trialthresholdcounter,'String',num2str(round(timeLeftThreshold)))
                 set(handles.trialthresholdcounter,'Visible','On')
                 eyeThreshold=eyeThreshold + (1 - timeLeftThreshold/post_ITI_thr_inc_dur_s) * post_ITI_thr_inc;
                 if timeLeftThreshold < 0
-                    %The abort trial option is disabled due to we are going to force the trial to start. 
-                    setappdata(0,'abort_trial_enabled',0); 
+                    %The abort trial option is disabled due to we are going to force the trial to start.
+                    setappdata(0,'abort_trial_enabled',0);
                 end
-                
-            else    
+
+            else
                 set(handles.trialthresholdcounter,'Visible','Off')
             end
-            
+
             %Eyelid threshold
             set(eyeTrace(2),'XData',eyedata(:,1)-timeSinceStreamStartMS,'YData',ones(1,length(eyedata))*eyeThreshold)
             setappdata(0,'eyeThreshold',eyeThreshold);
-            
+
             if timeLeft <= 0
                 eyeok=checkeye(handles, eyedata, eyeThreshold);
                 if eyeok || (timeLeftThreshold<0 && post_ITI_thr_inc_dur_s > 0)
@@ -1548,10 +1548,10 @@ function newFrameCallback(obj,event,himage)
 %         t1=clock;
 %     end
 %     t0=clock;
-% 
+%
 %     eyedata=NaN*ones(500,2);
 %     plt_range=-2100;
-% 
+%
 %     if get(handles.togglebutton_stream,'Value')
 %         set(0,'currentfigure',ghandles.maingui)
 %         set(ghandles.maingui,'CurrentAxes',handles.axes_eye)
@@ -1562,34 +1562,34 @@ function newFrameCallback(obj,event,himage)
 %         set(gca,'xtick',[-3000:500:0],'box','off')
 %         set(gca,'ytick',[0:0.5:1],'yticklabel',{'0' '' '1'})
 %     end
-% 
+%
 %     try
 %         while get(handles.togglebutton_stream,'Value') == 1
 %             t2=clock;
 %             metadata=getappdata(0,'metadata');  % get updated metadata within this loop, otherwise we'll be using stale data
-% 
+%
 %             % --- eye trace ---
 %             wholeframe=getsnapshot(vidobj);
 %             roi=wholeframe.*uint8(metadata.cam.mask); % multiply the frame by the mask --> everything outside of the ROI becomes 0 and everything inside the ROI remains the same (is multiplied by 1)
 %             eyelidpos=sum(roi(:)>=256*metadata.cam.thresh); % find everywhere in roi that is > your threshold value converted into 8-bit-integer units
-% 
+%
 %             % --- eye trace buffer ---
 %             etime0=round(1000*etime(clock,t0));
 %             eyedata(1:end-1,:)=eyedata(2:end,:);
 %             eyedata(end,1)=etime0;
 %             eyedata(end,2)=(eyelidpos-metadata.cam.calib_offset)/metadata.cam.calib_scale; % eyelid pos
-% 
+%
 %             set(pl1,'XData',eyedata(:,1)-etime0,'YData',eyedata(:,2))
-% 
+%
 %             % --- Trigger ----
 %             if get(handles.toggle_continuous,'Value') == 1
-% 
+%
 %                 stopTrial = str2double(get(handles.edit_StopAfterTrial,'String'));
 %                 if stopTrial > 0 && metadata.cam.trialnum > stopTrial
 %                     set(handles.toggle_continuous,'Value',0);
 %                     set(handles.toggle_continuous,'String','Start Continuous');
 %                 end
-% 
+%
 %                 etime1=round(1000*etime(clock,t1))/1000;
 %     %             etime1=t2-t1;
 %     %             etime1=etime1(6);
@@ -1601,7 +1601,7 @@ function newFrameCallback(obj,event,himage)
 %                     end
 %                 end
 %             end
-% 
+%
 %     %         t=round(1000*etime(clock,t2))/1000;
 %             % -- pause in the left time -----
 %     %         d=updaterate-t;
@@ -1612,17 +1612,17 @@ function newFrameCallback(obj,event,himage)
 %     %                 disp(sprintf('%s: Unable to sustain requested stream rate! Loop required %f seconds.',datestr(now,'HH:MM:SS'),t))
 %     %             end
 %     %         end
-% 
+%
 %             % Try to deal with dropped frames silently
 %             % if strcmp(src.TriggerSource,'Software') & strcmp(vidobj.Previewing,'off')
 %             %     handles.pwin=image(zeros(480,640),'Parent',handles.cameraAx);
 %             %     preview(vidobj,handles.pwin);
 %             % end
-% 
+%
 %             % if strcmp(src.TriggerSource,'Line0') & strcmp(vidobj.Running,'off')
 %             %     start(vidobj);
 %             % end
-% 
+%
 %         end
 %     catch
 %         if isvalid(handles.togglebutton_stream) %if we are quitting, don't try to restart the stream
@@ -1655,19 +1655,19 @@ function eyeok=checkeye(handles, eyedata, eyeThreshold)
 %         eyedata(:,1)=eyedata(:,1)-eyedata(end,1);
 %         recenteye=eyedata(eyedata(:,1)>-1000*str2double(get(handles.edit_stabletime,'String')), 2);
 %         eyestableok = ((max(recenteye)-min(recenteye))<str2double(get(handles.edit_stableeye,'String')));
-%         eyeok = eyethrok && eyestableok; 
+%         eyeok = eyethrok && eyestableok;
 %     end
-    
+
     if get(handles.wait_first_eye,'Value')
         eyedata(:,1)=eyedata(:,1)-eyedata(end,1);
         recenteye=eyedata(eyedata(:,1)>-1000*str2double(get(handles.edit_stabletime,'String')), 2);
         eyestableok = ((max(recenteye)-min(recenteye))<str2double(get(handles.edit_stableeye,'String')));
         eyethrok = (eyedata(end,2)<eyeThreshold);
         eyemeanthrok = (mean(recenteye)<eyeThreshold);
-        
-        eyeok = eyestableok && eyethrok && eyemeanthrok; 
+
+        eyeok = eyestableok && eyethrok && eyemeanthrok;
     end
-    
+
     %We check if the second eye is also ready for the new trial
     if eyeok && get(handles.wait_second_eye,'Value')
         metadata = getappdata(0,'metadata');
@@ -1678,11 +1678,11 @@ function eyeok=checkeye(handles, eyedata, eyeThreshold)
             eyestableok = ((max(recenteye)-min(recenteye))<str2double(get(handles.edit_stableeye,'String')));
             eyethrok = (eyedata_2(end,2)<eyeThreshold);
             eyemeanthrok = (mean(recenteye)<eyeThreshold);
-            
-            eyeok = eyeok && eyestableok && eyethrok && eyemeanthrok; 
+
+            eyeok = eyeok && eyestableok && eyethrok && eyemeanthrok;
         end
     end
-    
+
 
     %%%%%%%%%% end of user functions %%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1849,7 +1849,7 @@ function checkbox_verbose_Callback(hObject, eventdata, handles)
     % % hObject    handle to edit_posttime (see GCBO)
     % % eventdata  reserved - to be defined in a future version of MATLAB
     % % handles    structure with handles and user data (see GUIDATA)
-    % 
+    %
     % % Hints: get(hObject,'String') returns contents of edit_posttime as text
     % %        str2double(get(hObject,'String')) returns contents of edit_posttime as a double
 
@@ -1859,7 +1859,7 @@ function checkbox_verbose_Callback(hObject, eventdata, handles)
     % % hObject    handle to edit_posttime (see GCBO)
     % % eventdata  reserved - to be defined in a future version of MATLAB
     % % handles    empty - handles not created until after all CreateFcns called
-    % 
+    %
     % % Hint: edit controls usually have a white background on Windows.
     % %       See ISPC and COMPUTER.
     % if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -1901,7 +1901,7 @@ function pushbutton_abort_Callback(hObject, eventdata, handles)
     % % hObject    handle to edit_ITI_rand (see GCBO)
     % % eventdata  reserved - to be defined in a future version of MATLAB
     % % handles    empty - handles not created until after all CreateFcns called
-    % 
+    %
     % % Hint: edit controls usually have a white background on Windows.
     % %       See ISPC and COMPUTER.
     % if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -1941,15 +1941,18 @@ function pushbutton_loadParams_Callback(hObject, eventdata, handles)
 
     [paramfile,paramfilepath,filteridx] = uigetfile('*.csv');
 
+    if ~strfind(paramfile, metadata.mouse)
+        disp('WARNING. The parameter file does not match the mouse name.')
+
     if paramfile & filteridx == 1 % The filterindex thing is a hack to make sure it's a csv file
         paramtable.data=load_params(fullfile(paramfilepath,paramfile));
         set(handles.uitable_params,'Data',paramtable.data);
         setappdata(0,'paramtable',paramtable);
     end
-    
+
     %update the trial table
     update_trial_table(hObject, eventdata, handles);
-    
+
     %The default parameters have been modified.
     setappdata(0,'defaultparametersmodified', 1);
 
@@ -1974,10 +1977,10 @@ function uitable_params_CellEditCallback(hObject, eventdata, handles)
     %	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
     %	Error: error string when failed to convert EditData to appropriate value for Data
     % handles    structure with handles and user data (see GUIDATA)
-    
+
     %update the trial table if some parameter is modified.
     update_trial_table(hObject, eventdata, handles);
-    
+
     %The default parameters have been modified.
     setappdata(0,'defaultparametersmodified', 1);
 
@@ -1989,7 +1992,7 @@ function wait_first_eye_Callback(hObject, eventdata, handles)
     % handles    structure with handles and user data (see GUIDATA)
 
     % Hint: get(hObject,'Value') returns toggle state of wait_first_eye
-    
+
     paramtable = getappdata(0, 'paramtable');
     paramtable.WaitFirstEye=get(handles.wait_first_eye,'Value');
     setappdata(0,'paramtable',paramtable);
@@ -2046,7 +2049,7 @@ function fast_saving_box_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-    
+
     fast_saving_option=get(handles.fast_saving_box,'Value');
     setappdata(0,'fast_saving_option',fast_saving_option);
 
